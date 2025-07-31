@@ -38,13 +38,11 @@
         </activity>
 
         <!-- Background Shake Detection Service (implement later) -->
-        <!--
         <service
             android:name=".service.ShakeDetectionService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
-        -->
     </application>
 
 </manifest>

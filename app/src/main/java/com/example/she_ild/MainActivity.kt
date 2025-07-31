@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -33,11 +35,18 @@ class MainActivity : ComponentActivity() {
         // ✅ Shake only triggers if the service is running
         shakeDetector = ShakeDetector(
             onShake = {
+                Log.d("MainActivity", "Shake callback triggered, service running: ${viewModel.uiState.value.isServiceRunning}")
                 if (viewModel.uiState.value.isServiceRunning) {
                     viewModel.onShakeDetected(this)
+                } else {
+                    Log.d("MainActivity", "Service not running, ignoring shake")
                 }
             },
-            thresholdProvider = { viewModel.shakeThreshold.value }
+            thresholdProvider = { 
+                val threshold = viewModel.shakeThreshold.value
+                Log.d("MainActivity", "Current shake threshold: $threshold")
+                threshold
+            }
         )
 
 
@@ -57,6 +66,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("MainActivity", "Registering shake detector")
         sensorManager.registerListener(
             shakeDetector,
             sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -66,6 +76,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        Log.d("MainActivity", "Unregistering shake detector")
         sensorManager.unregisterListener(shakeDetector)
     }
 
